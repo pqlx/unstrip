@@ -20,7 +20,7 @@ class ELFHelper:
 
     def locate_symtab(self):
         
-        result = None
+        result = (None, None)
         for i, section in enumerate(self.file.iter_sections()):
             if section['sh_type'] == 'SHT_SYMTAB':
                 
@@ -47,8 +47,6 @@ class ELFHelper:
                 return i
         
         return None
-
-
 
 class NewELF:
     
