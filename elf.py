@@ -20,17 +20,17 @@ class ELFHelper:
 
     def locate_symtab(self):
         
-        result = (None, None)
-        for i, section in enumerate(self.file.iter_sections()):
+        result = None
+        for section in self.file.iter_sections():
             if section['sh_type'] == 'SHT_SYMTAB':
                 
-                if result != (None, None):
+                if not result:
                     logger.warn('Multiple sections of type SHT_SYMTAB found. Using the last one')
                 
                 if section.name != '.symtab':
                     logger.warn("Symbol table section is not called '.symtab'")
 
-                result = (i, section)
+                result = section
         
         return result
 
