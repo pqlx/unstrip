@@ -24,7 +24,7 @@ class ELFHelper:
         for i, section in enumerate(self.file.iter_sections()):
             if section['sh_type'] == 'SHT_SYMTAB':
                 
-                if result:
+                if result != (None, None):
                     logger.warn('Multiple sections of type SHT_SYMTAB found. Using the last one')
                 
                 if section.name != '.symtab':
