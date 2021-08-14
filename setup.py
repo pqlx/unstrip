@@ -11,5 +11,7 @@ setup(
     name="unstrip",
     author="David Bouman",
     author_email="dbouman03@gmail.com",
-    install_requires=requirements)
+    install_requires=requirements,
+    entry_points={'console_scripts': ['unstrip = unstrip.__main__:main']}
+    )
 
