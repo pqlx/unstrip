@@ -3,11 +3,9 @@ import functools
 
 from elftools.construct.lib import Container
 
-from elf import ELFHelper, NewELF
-from idasymbols import get_ida_function_symbols
-from symbol import Symbol, SymbolType
-
-        
+from unstrip.elf import ELFHelper, NewELF
+from unstrip.symbols.idasymbols import get_ida_function_symbols
+from unstrip.symbols.symbol import Symbol, SymbolType
 
 class Unstrip:
 
@@ -300,7 +298,5 @@ if __name__ == "__main__":
     a = Unstrip("./example_bins/test_stripped", new_path='./bruh')
     
     symbols = get_ida_function_symbols('./example_bins/test_stripped_ida.i64')
-
     a.set_symbols(symbols)
-
     a.add_back_symbols()

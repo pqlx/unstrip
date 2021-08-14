@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
 requirements = [
-    'git+https://github.com/eliben/pyelftools',
-    'git+https://github.com/williballenthin/python-idb'
+    'pyelftools',
+    'python-idb',
+    'python-slugify',
+    'pytest'
 ]
 
 setup(

@@ -2,7 +2,7 @@ from typing import List
 import idb
 from idb.idapython import FLAGS
 
-from symbol import Symbol, SymbolType, BindType
+from unstrip.symbols.symbol import Symbol, SymbolType, BindType
 
 
 def ida_flags_is_user_name(flags):
