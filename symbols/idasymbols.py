@@ -14,7 +14,7 @@ def ida_flags_is_user_name(flags):
 def ida_func_get_size(idc, ea):
     return idc.GetFunctionAttr(ea, idc.FUNCATTR_END) - idc.GetFunctionAttr(ea, idc.FUNCATTR_START)
 
-def get_ida_symbols(path) -> List[Symbol]:
+def get_ida_function_symbols(path) -> List[Symbol]:
     
     symbols = []
     with idb.from_file(path) as db:
@@ -43,4 +43,4 @@ def get_ida_symbols(path) -> List[Symbol]:
 
 if __name__ == "__main__":
     import sys
-    get_ida_symbols(sys.argv[1])
+    get_ida_function_symbols(sys.argv[1])
