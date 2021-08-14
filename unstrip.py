@@ -184,7 +184,7 @@ class Unstrip:
                 sh_flags=0,
                 sh_addr=0,
                 sh_offset=new_strtab_begin,
-                sh_size=sizes[1],
+                sh_size=sizes[1] + 1, # for null byte
                 sh_link=0,
                 sh_info=0,
                 sh_addralign=0,
