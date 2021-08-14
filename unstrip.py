@@ -191,7 +191,7 @@ class Unstrip:
                 sh_entsize=0)
         
         shstrtab_hdr = self.create_new_section_header(
-               sh_name=(old_shstrtab['sh_name'] if old_shstrtab else 0),
+               sh_name=(old_shstrtab['sh_name'] if old_shstrtab else 1),
                sh_type='SHT_STRTAB',
                sh_flags=0,
                sh_addr=0,
