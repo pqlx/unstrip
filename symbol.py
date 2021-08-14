@@ -23,12 +23,12 @@ class Symbol:
     name: Optional[bytes]
     type_: SymbolType
     value: int
-    section_idx: int
+    section_idx: Optional[int]=None
     size: int = 0
     visibility: VisibilityType = VisibilityType.DEFAULT
     bind: BindType = BindType.GLOBAL
 
-    def serialize(self, ctx, strtab_list, initial_size):
+    def serialize(self, helper, strtab_list, initial_size):
         c = Container()
         c['st_name'] = self.calculate_strtab_idx(strtab_list, initial_size) if self.name else 0
         c['st_value'] = self.value
@@ -38,9 +38,9 @@ class Symbol:
         c['st_info']['type'] = self.type_.value
         c['st_other'] = Container()
         c['st_other']['visibility'] = self.visibility.value
-        c['st_shndx'] = self.section_idx
+        c['st_shndx'] = helper.va_to_section_idx(self.value) if not self.section_idx else self.section_idx
         
-        return ctx.structs.Elf_Sym.build(c) 
+        return helper.file.structs.Elf_Sym.build(c) 
 
     def calculate_strtab_idx(self, strings: List[str], initial_size: int):
 

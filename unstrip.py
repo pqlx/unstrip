@@ -172,7 +172,7 @@ class Unstrip:
                 sh_flags=0,
                 sh_addr=0,
                 sh_offset=new_symtab_begin,
-                sh_size=sizes[0] + self.helper.file.structs.Elf_Sym.sizeof(),
+                sh_size=sizes[0] + self.helper.file.structs.Elf_Sym.sizeof(), # extra null section
                 sh_link=self.helper.file.header['e_shnum'] + 1,
                 sh_info=1, 
                 sh_addralign=8, 
@@ -289,7 +289,7 @@ class Unstrip:
         
 
     def serialize_symbols(self, initial_size):
-        return b''.join([symbol.serialize(self.helper.file, self.new_symbols_strtab, initial_size) for symbol in self._symbols])
+        return b''.join([symbol.serialize(self.helper, self.new_symbols_strtab, initial_size) for symbol in self._symbols])
     
     @property
     @functools.cache

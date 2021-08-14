@@ -24,7 +24,7 @@ class ELFHelper:
         for section in self.file.iter_sections():
             if section['sh_type'] == 'SHT_SYMTAB':
                 
-                if not result:
+                if result:
                     logger.warn('Multiple sections of type SHT_SYMTAB found. Using the last one')
                 
                 if section.name != '.symtab':
@@ -47,6 +47,20 @@ class ELFHelper:
                 return i
         
         return None
+    
+    
+    def va_to_section_idx(self, va):
+        '''Converts a virtual address to the index of its section (if possible)'''
+        
+        for i, section in enumerate(self.file.iter_sections()):
+            
+            if not section['sh_addr']:
+                continue # Not mapped 
+
+            if section['sh_addr'] <= va < (section['sh_addr'] + section['sh_size']):
+                return i
+        
+        logger.warn(f"Address {hex(va)} is not mapped or does not reside in any section.")
 
 class NewELF:
     
