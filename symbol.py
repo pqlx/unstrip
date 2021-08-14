@@ -1,4 +1,4 @@
-from typing import List
+from typing import Optional, List
 
 from dataclasses import dataclass
 from enum import Enum
@@ -9,6 +9,7 @@ from elftools.common.utils import struct_parse
 class SymbolType(Enum):
     FUNCTION = 'STT_FUNC'
     VARIABLE = 'STT_OBJECT'
+    NOTYPE   = 'STT_NOTYPE'
 
 class VisibilityType(Enum):
     DEFAULT = 'STV_DEFAULT'
@@ -19,7 +20,7 @@ class BindType(Enum):
 
 @dataclass
 class Symbol:
-    name: bytes
+    name: Optional[bytes]
     type_: SymbolType
     value: int
     section_idx: int
@@ -29,7 +30,7 @@ class Symbol:
 
     def serialize(self, ctx, strtab_list, initial_size):
         c = Container()
-        c['st_name'] = self.calculate_strtab_idx(strtab_list, initial_size) 
+        c['st_name'] = self.calculate_strtab_idx(strtab_list, initial_size) if self.name else 0
         c['st_value'] = self.value
         c['st_size'] = self.size
         c['st_info'] = Container()

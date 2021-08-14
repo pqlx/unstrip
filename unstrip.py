@@ -39,9 +39,14 @@ class Unstrip:
         if has_old:
             new_elf.memcpy(-1, old_symtab["sh_offset"], old_symtab["sh_size"])
         
-        initial_strtab_size = old_strtab["sh_size"] if old_strtab else 0
+        initial_strtab_size = old_strtab["sh_size"] if old_strtab else 1 # one after mandatory first null byte
         
         serialized_symbols = self.serialize_symbols(initial_size=initial_strtab_size)
+        
+        if not has_old:
+            # add a null symbol (required)
+            serialized_symbols = (b"\x00" * self.helper.file.structs.Elf_Sym.sizeof()) + serialized_symbols 
+
         new_elf.append(serialized_symbols)
 
         new_strtab_begin = self.new_elf_append_string_table(new_elf, self.new_symbols_strtab, old_strtab)
@@ -52,11 +57,17 @@ class Unstrip:
     def new_elf_append_string_table(self, new_elf, strings: List[str], old_strtab=None):
         
         new_strtab_begin = new_elf.file_size()
+        
+        
+        symtab_raw = b"\x00".join(strings) + b"\x00"
 
         if old_strtab:
             new_elf.memcpy(-1, old_strtab['sh_offset'], old_strtab['sh_size'])
         
-        new_elf.append(b"\x00".join(strings) + b"\x00")
+        else:
+            symtab_raw = b"\x00" + symtab_raw
+
+        new_elf.append(symtab_raw)
         
         return new_strtab_begin
 
@@ -126,10 +137,7 @@ class Unstrip:
         """
 
         elf = NewELF(self.path, self.new_path, helper=self.helper)
-        
-        # Start by appending a new section header table
-        section_table_addr, section_header_addr = self.new_elf_append_section_table(elf)
-        
+         
         # Then append the new symtab and strtab
         new_symtab_begin, new_strtab_begin = self.new_elf_append_syms(elf, old_symtab=None, old_strtab=None)
         
@@ -164,9 +172,9 @@ class Unstrip:
                 sh_flags=0,
                 sh_addr=0,
                 sh_offset=new_symtab_begin,
-                sh_size=sizes[0],
+                sh_size=sizes[0] + self.helper.file.structs.Elf_Sym.sizeof(),
                 sh_link=self.helper.file.header['e_shnum'] + 1,
-                sh_info=0,
+                sh_info=1, 
                 sh_addralign=8, 
                 sh_entsize=self.helper.file.structs.Elf_Sym.sizeof())
 
@@ -193,6 +201,10 @@ class Unstrip:
                sh_info=0,
                sh_addralign=0,
                sh_entsize=0)
+            
+
+        # Start by appending a new section header table
+        section_table_addr, section_header_addr = self.new_elf_append_section_table(elf)
         
 
         shdr = self.helper.file.structs.Elf_Shdr

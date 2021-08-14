@@ -19,7 +19,7 @@ def get_ida_symbols(path) -> List[Symbol]:
 
     for idasymbol in idasymbols:
 
-        sym = Symbol(name=idasymbol[1].encode(), bind=BindType.GLOBAL, type_=SymbolType.FUNCTION, value=idasymbol[0], section_idx=4)
+        sym = Symbol(name=idasymbol[1].encode(), bind=BindType.GLOBAL, type_=SymbolType.FUNCTION, value=idasymbol[0], section_idx=14)
         symbols.append(sym)
 
     return symbols
