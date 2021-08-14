@@ -1,4 +1,4 @@
-from typing import List
+from typing import Union, List
 import functools
 
 from elftools.construct.lib import Container
@@ -9,13 +9,11 @@ from unstrip.symbols import Symbol, SymbolType
 class Unstrip:
 
     path: str
-    new_path: str
     _symbols: List[Symbol]
 
     
-    def __init__(self, path: str, symbols: List[Symbol]=None, new_path=None):
+    def __init__(self, path: str, symbols: List[Symbol]=None):
         self.path = path
-        self.new_path = new_path or path + '_unstrip'
         self.helper = ELFHelper(path)
         
         if symbols:
@@ -93,7 +91,7 @@ class Unstrip:
         return (new_section_table_addr, new_section_header_addr)
 
     
-    def add_syms_to_existing(self, symtab):
+    def add_syms_to_existing(self, new_path: str, symtab):
         """
         Add new symbols to an ELF if there is already a symbol table present
         """
@@ -101,7 +99,7 @@ class Unstrip:
         
         symtab_growth, strtab_growth = self.calc_section_size_diffs()
                 
-        elf = NewELF(self.path, self.new_path, helper=self.helper)
+        elf = NewELF(self.path, new_path, helper=self.helper)
         
         # Start by appending the new symtab and strtab to the end of the ELF
         new_symtab_begin, new_strtab_begin = self.new_elf_append_syms(elf, old_symtab=symtab, old_strtab=strtab)
@@ -128,12 +126,12 @@ class Unstrip:
         elf.memset(b'\x00', strtab['sh_offset'], strtab['sh_size'])
 
     
-    def add_new_syms(self):
+    def add_new_syms(self, new_path: str):
         """
         Add symbols to an ELF that doesn't contain a symbol table yet, or no section table at all
         """
 
-        elf = NewELF(self.path, self.new_path, helper=self.helper)
+        elf = NewELF(self.path, new_path, helper=self.helper)
          
         # Then append the new symtab and strtab
         new_symtab_begin, new_strtab_begin = self.new_elf_append_syms(elf, old_symtab=None, old_strtab=None)
@@ -233,14 +231,14 @@ class Unstrip:
             # Finally, zero the old section headers
             elf.memset(b"\x00", self.helper.file['e_shoff'], self.helper.file['e_shnum'] * self.helper.file['e_shentsize'])
 
-    def add_back_symbols(self):
+    def add_back_symbols(self, new_path: Union[str, 'pathlib.Path']):
          
         symtab = self.helper.locate_symtab()
         
         if symtab:
-            self.add_syms_to_existing(symtab)
+            self.add_syms_to_existing(str(new_path), symtab)
         else:
-            self.add_new_syms()
+            self.add_new_syms(str(new_path))
     
 
     def calc_section_size_diffs(self):
