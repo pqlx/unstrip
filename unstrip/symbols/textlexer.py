@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 '''
-function this_is_a_symbol @ 0x1000, size=100 
+function this_is_a_symbol @ 0x1000, size=100 visibility=GLOBAL
 '''
 
 tokens = (

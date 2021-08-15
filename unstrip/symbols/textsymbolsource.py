@@ -9,6 +9,11 @@ from unstrip.symbols.textlexer import create_lexer
 
 logger = logging.getLogger(__name__)
 
+class TextSymbolDecodeException(Exception):
+    pass
+
+
+
 class TextSymbolSource(SymbolSource):
 
     def __init__(self, text_path: Union[str, 'pathlib.Path']=None, raw_text: str=None):
@@ -21,7 +26,7 @@ class TextSymbolSource(SymbolSource):
         elif raw_text:
             self._text = raw_text
         else:
-            raise Exception("Either supply text_path or raw_text")
+            raise TextSymbolDecodeException("Either supply text_path or raw_text")
   
     def get_function_symbols(self) -> List[Symbol]:
         """
@@ -39,13 +44,13 @@ class TextSymbolSource(SymbolSource):
             if extra:
                 msg += ": " + extra
             
-            raise Exception(msg)
+            raise TextSymbolDecodeException(msg)
         
         def next_tok(lexer_, no_fail=True):
             
             tok = lexer_.token()
             if not tok and no_fail:
-                raise Exception("Token stream stopped prematurely.")
+                raise TextSymbolDecodeException("Token stream stopped prematurely.")
             return tok
         
         def symbol_set_value(symbol, key, value):
@@ -57,10 +62,10 @@ class TextSymbolSource(SymbolSource):
             }
 
             if key not in mappings.keys():
-                raise Exception(f"Invalid key '{key}'")
+                raise TextSymbolDecodeException(f"Invalid key '{key}'")
             
             if key == 'size' and not isinstance(value, int):
-                raise Exception(f"Expected integer value for key 'size'")
+                raise TextSymbolDecodeException(f"Expected integer value for key 'size'")
             
 
             if isinstance(value, int):
@@ -81,7 +86,7 @@ class TextSymbolSource(SymbolSource):
             }
             
             if value.lower() not in lookuks[key].keys():
-                raise Exception(f"Invalid value for key {key}")
+                raise TextSymbolDecodeException(f"Invalid value for key {key}")
 
             setattr(symbol, key, lookups[key][value.lower()])
          
