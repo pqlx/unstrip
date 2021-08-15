@@ -4,7 +4,8 @@ requirements = [
     'pyelftools',
     'python-idb',
     'python-slugify',
-    'pytest'
+    'pytest',
+    'ply'
 ]
 
 setup(
