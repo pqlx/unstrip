@@ -142,12 +142,12 @@ class TextSymbolSource(SymbolSource):
                 tok = next_tok(lexer)
                 
                 if tok.type != '=':
-                    syntax_error("Expected '=' token.")
+                    syntax_error(tok, "Expected '=' token.")
                 
                 tok = next_tok(lexer)
 
                 if tok.type not in ('STRING_LITERAL', 'INT', 'VAR_NAME'):
-                    syntax_error("Expected either STRING_LITERAL, INT, or VAR_NAME token")
+                    syntax_error(tok, "Expected either STRING_LITERAL, INT, or VAR_NAME token")
                 value = tok.value
                 
                 symbol_set_value(current_symbol, key, value) 
