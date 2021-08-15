@@ -16,7 +16,7 @@ tokens = (
     'STRING_LITERAL')
 
 def t_INT(t):
-    r'(0x|0b|0o)?\d+'
+    r'0x[0-9a-fA-F]+|0b[0-1]+|0o[0-7]+|\d+'
         
     bases = {
         '0x': 16,
