@@ -47,8 +47,7 @@ class IDASymbolSource(SymbolSource):
                         size=func_size,
                         bind=BindType.GLOBAL, # All the symbol we're gonna find here are global
                         type_=SymbolType.FUNCTION,
-                        value=ea,
-                        section_idx=14)
+                        value=ea)
 
                 symbols.append(sym)
         
