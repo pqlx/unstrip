@@ -1,7 +1,7 @@
 from typing import List
 import sys
 import argparse
-
+from pathlib import Path
 
 from unstrip import Unstrip
 from unstrip.symbols import IDASymbolSource, TextSymbolSource
@@ -34,6 +34,12 @@ def start_cli(args_: List[str]):
 
     old_path = args.infile
     new_path = args.outfile or old_path + '_unstripped'
+    
+    if Path(new_path).exists():
+        confirmation = input(f"Sure you want to overwrite file {new_path}? [yn] ")
+        if not confirmation or confirmation[0].lower() != 'y':
+            sys.stderr.write("Terminating...\n")
+            exit(-1)
 
     u = Unstrip(old_path, symbols=symbols)
 
